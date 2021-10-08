@@ -7,6 +7,59 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        title: 'Flutter hello world',
+        theme: ThemeData(primarySwatch: Colors.deepOrange),
+        home: const MyHomePage(
+          title: "Home",
+        ));
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  final String title;
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.yellow,
+          title: Text(
+            widget.title, //Home
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
+        body: const Center(
+          child: Text(
+            "Hello world",
+            style: TextStyle(
+                color: Colors.orange,
+                fontSize: 40,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.black),
+          ),
+        ));
+  }
+}
+
+
+/*
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -113,3 +166,5 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+*/

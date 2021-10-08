@@ -1,3 +1,5 @@
 # Flutter_Radiation
 Hướng dẫn làm app hiển thị số liệu phóng xạ - Flutter
-Test pull code
+
+# Cài đặt môi trường flutter
+# Viết app flutter hello world
