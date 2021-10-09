@@ -1,60 +1,83 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const myApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class myApp extends StatelessWidget {
+  const myApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Flutter hello world',
-        theme: ThemeData(primarySwatch: Colors.deepOrange),
-        home: const MyHomePage(
-          title: "Home",
-        ));
+    return const MaterialApp(
+      title: 'App counter',
+      home: myHomePage(),
+    );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
+class myHomePage extends StatefulWidget {
+  const myHomePage({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _myHomePageState createState() => _myHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _myHomePageState extends State<myHomePage> {
+  int _counter = 0;
+  void countUp() {
+    print("Pushed counter up");
+    setState(() {
+      _counter++;
+    });
+    print('$_counter');
+  }
+
+  void countDown() {
+    print("Pushed counter down");
+    setState(() {
+      _counter--;
+    });
+
+    print('$_counter');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.yellow,
-          title: Text(
-            widget.title, //Home
-            style: const TextStyle(color: Colors.black),
-          ),
+          title: const Text("Home"),
         ),
         body: Center(
           child: Column(
-            children: const [
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text("Counter value:"),
               Text(
-                "Hello world",
-                style: TextStyle(
-                    color: Colors.orange,
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                    backgroundColor: Colors.black),
+                '$_counter',
+                style: TextStyle(color: Colors.red, fontSize: 40),
+              )
+            ],
+          ),
+        ),
+        floatingActionButton: Padding(
+          padding: EdgeInsets.all(8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              FloatingActionButton(
+                onPressed: countDown,
+                child: const Icon(Icons.remove),
               ),
-              Text("Hello 2")
+              FloatingActionButton(
+                onPressed: countUp,
+                child: const Icon(Icons.add),
+              ),
             ],
           ),
         ));
   }
 }
-
-
 /*
 import 'package:flutter/material.dart';
 
@@ -171,5 +194,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
 */
