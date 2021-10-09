@@ -1,29 +1,31 @@
+// ignore_for_file: avoid_print
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const myApp());
+  runApp(const MyApp());
 }
 
-class myApp extends StatelessWidget {
-  const myApp({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'App counter',
-      home: myHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
-class myHomePage extends StatefulWidget {
-  const myHomePage({Key? key}) : super(key: key);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _myHomePageState createState() => _myHomePageState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _myHomePageState extends State<myHomePage> {
+class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   void countUp() {
     print("Pushed counter up");
@@ -55,13 +57,13 @@ class _myHomePageState extends State<myHomePage> {
               const Text("Counter value:"),
               Text(
                 '$_counter',
-                style: TextStyle(color: Colors.red, fontSize: 40),
+                style: const TextStyle(color: Colors.red, fontSize: 40),
               )
             ],
           ),
         ),
         floatingActionButton: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
