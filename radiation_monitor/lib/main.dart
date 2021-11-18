@@ -200,6 +200,7 @@ class StationDetail extends StatefulWidget {
 }
 
 class _StationDetailState extends State<StationDetail> {
+  bool isLoaded = false;
   dynamic tempC = 0;
   late Station _s;
   @override
@@ -220,6 +221,7 @@ class _StationDetailState extends State<StationDetail> {
       if (this.mounted) {
         setState(() {
           tempC = station.tempC;
+          isLoaded = true;
         });
       }
     });
@@ -236,38 +238,44 @@ class _StationDetailState extends State<StationDetail> {
 
   Widget build(BuildContext context) {
     final item = ModalRoute.of(context)!.settings.arguments as Station;
-    return WillPopScope(
-      onWillPop: () async {
-        print("onwillpop");
-        // socket.emit('leave-room', item.id);
-        socket.off('temp2web');
-        return true;
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(item.id),
-        ),
-        body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '$tempC',
-                style: TextStyle(color: Colors.red, fontSize: 60),
-              ),
-              Text(
-                'O',
-                style: TextStyle(color: Colors.red, fontSize: 20),
-              ),
-              Text(
-                'C',
-                style: TextStyle(color: Colors.red, fontSize: 60),
-              ),
-            ],
+    if (!isLoaded) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return WillPopScope(
+        onWillPop: () async {
+          print("onwillpop");
+          // socket.emit('leave-room', item.id);
+          socket.off('temp2web');
+          return true;
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(item.name),
+          ),
+          body: Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '$tempC',
+                  style: TextStyle(color: Colors.red, fontSize: 60),
+                ),
+                Text(
+                  'O',
+                  style: TextStyle(color: Colors.red, fontSize: 20),
+                ),
+                Text(
+                  'C',
+                  style: TextStyle(color: Colors.red, fontSize: 60),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    }
   }
 }
