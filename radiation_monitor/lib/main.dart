@@ -98,7 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
       stationDataList = _stationDataList;
     });
     socket.on('temp2app', (data) {
-      if (this.mounted) {
+      if (mounted) {
         StationData station_data = StationData.fromJson(data);
         var index = stationDataList
             .indexWhere((element) => station_data.id == element.id);
@@ -167,6 +167,7 @@ class StationItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         print('Clicked ${item.name}');
+        socket.emit('join-room', item.id);
         Navigator.pushNamed(context, StationDetail.nameRoute, arguments: item);
       },
       splashColor: Colors.red,
@@ -183,7 +184,8 @@ class StationItem extends StatelessWidget {
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
-              Text('${station_data.realtime}')
+              Text('${station_data.realtime}'),
+              Text('${station_data.counts}')
             ],
           ),
         ),
@@ -201,27 +203,22 @@ class StationDetail extends StatefulWidget {
 
 class _StationDetailState extends State<StationDetail> {
   bool isLoaded = false;
-  dynamic tempC = 0;
-  late Station _s;
+  late StationData _stationData;
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      _s = ModalRoute.of(context)!.settings.arguments as Station;
-      connectAndListen();
-    });
+    connectAndListen();
   }
 
   void connectAndListen() {
     print('Call func connectAndListen in detail');
-    socket.emit("join-room", _s.id);
     socket.on('temp2web', (data) {
       print('detail $data');
       var station = StationData.fromJson(data);
-      if (this.mounted) {
+      if (mounted) {
         setState(() {
-          tempC = station.tempC;
           isLoaded = true;
+          _stationData = station;
         });
       }
     });
@@ -229,7 +226,7 @@ class _StationDetailState extends State<StationDetail> {
     //When an event recieved from server, data is added to the stream
     socket.onDisconnect((_) {
       print('disconnect to station or server');
-      if (this.mounted) {
+      if (mounted) {
         Navigator.pop(context);
       }
       socket.off('temp2web');
@@ -239,14 +236,13 @@ class _StationDetailState extends State<StationDetail> {
   Widget build(BuildContext context) {
     final item = ModalRoute.of(context)!.settings.arguments as Station;
     if (!isLoaded) {
-      return Center(
+      return const Center(
         child: CircularProgressIndicator(),
       );
     } else {
       return WillPopScope(
         onWillPop: () async {
           print("onwillpop");
-          // socket.emit('leave-room', item.id);
           socket.off('temp2web');
           return true;
         },
@@ -260,14 +256,14 @@ class _StationDetailState extends State<StationDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$tempC',
-                  style: TextStyle(color: Colors.red, fontSize: 60),
+                  _stationData.tempC,
+                  style: const TextStyle(color: Colors.red, fontSize: 60),
                 ),
-                Text(
+                const Text(
                   'O',
                   style: TextStyle(color: Colors.red, fontSize: 20),
                 ),
-                Text(
+                const Text(
                   'C',
                   style: TextStyle(color: Colors.red, fontSize: 60),
                 ),
