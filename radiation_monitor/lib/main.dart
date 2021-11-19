@@ -1,8 +1,4 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:radiation_monitor/geolocation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'station.dart';
@@ -10,6 +6,7 @@ import 'stationdata.dart';
 
 IO.Socket socket = IO.io('https://rewes1.glitch.me',
     IO.OptionBuilder().setTransports(['websocket']).build());
+
 void main() {
   runApp(const MyApp());
 }
@@ -64,23 +61,20 @@ class _MyHomePageState extends State<MyHomePage> {
   List<Station> stations = [];
   List<StationData> stationDataList = [];
   StationData stationTemp = StationData.empty();
-  @override
+
   void initState() {
-    // TODO: implement initState
     super.initState();
     connectAndListen();
   }
 
   void connectAndListen() {
     print('Call func connectAndListen');
-
     socket.onConnect((_) {
       print('connect');
-      socket.emit('fromClient', 'test from client');
     });
 
     socket.on('stations', (data) {
-      // print(data[0]);
+      print('from server $data');
       // '{"name":"Tram2","geolocation":{"latitude":10,"longitude":106},"address":"227-NguyenVanCu","id":"8UKlMQhi9uXujou9AAAs"}';
       List<dynamic> _stations = data;
       setState(() {
@@ -184,8 +178,8 @@ class StationItem extends StatelessWidget {
                     fontSize: 25,
                     fontWeight: FontWeight.bold),
               ),
-              Text('${station_data.realtime}'),
-              Text('${station_data.counts}')
+              Text('Realtime: ${station_data.realtime}'),
+              Text('Temp: ${station_data.tempC}')
             ],
           ),
         ),
@@ -202,9 +196,8 @@ class StationDetail extends StatefulWidget {
 }
 
 class _StationDetailState extends State<StationDetail> {
-  bool isLoaded = false;
   late StationData _stationData;
-  @override
+  bool isLoaded = false;
   void initState() {
     super.initState();
     connectAndListen();
@@ -212,8 +205,11 @@ class _StationDetailState extends State<StationDetail> {
 
   void connectAndListen() {
     print('Call func connectAndListen in detail');
+    socket.onConnect((_) {
+      print('connect');
+    });
     socket.on('temp2web', (data) {
-      print('detail $data');
+      print('temp2web from server $data');
       var station = StationData.fromJson(data);
       if (mounted) {
         setState(() {
@@ -221,11 +217,12 @@ class _StationDetailState extends State<StationDetail> {
           _stationData = station;
         });
       }
+      print(_stationData);
     });
 
     //When an event recieved from server, data is added to the stream
     socket.onDisconnect((_) {
-      print('disconnect to station or server');
+      print('disconnect');
       if (mounted) {
         Navigator.pop(context);
       }
@@ -233,6 +230,7 @@ class _StationDetailState extends State<StationDetail> {
     });
   }
 
+  @override
   Widget build(BuildContext context) {
     final item = ModalRoute.of(context)!.settings.arguments as Station;
     if (!isLoaded) {
@@ -242,7 +240,7 @@ class _StationDetailState extends State<StationDetail> {
     } else {
       return WillPopScope(
         onWillPop: () async {
-          print("onwillpop");
+          print('willPopScope');
           socket.off('temp2web');
           return true;
         },
@@ -256,16 +254,12 @@ class _StationDetailState extends State<StationDetail> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _stationData.tempC,
+                  '${_stationData.uSv}',
                   style: const TextStyle(color: Colors.red, fontSize: 60),
                 ),
                 const Text(
-                  'O',
+                  'uSv/h',
                   style: TextStyle(color: Colors.red, fontSize: 20),
-                ),
-                const Text(
-                  'C',
-                  style: TextStyle(color: Colors.red, fontSize: 60),
                 ),
               ],
             ),

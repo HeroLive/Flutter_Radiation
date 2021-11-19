@@ -3,12 +3,12 @@ import 'package:radiation_monitor_station_detail/stationdata.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'station.dart';
 
+IO.Socket socket = IO.io('https://rewes1.glitch.me',
+    IO.OptionBuilder().setTransports(['websocket']).build());
+
 void main() {
   runApp(const MyApp());
 }
-
-IO.Socket socket = IO.io('https://rewes1.glitch.me',
-    IO.OptionBuilder().setTransports(['websocket']).build());
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -58,6 +58,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   List<Station> stations = [];
+
   void initState() {
     super.initState();
     connectAndListen();
@@ -151,11 +152,10 @@ class _StationDetailState extends State<StationDetail> {
   }
 
   void connectAndListen() {
-    print('Call func connectAndListen');
+    print('Call func connectAndListen in detail');
     socket.onConnect((_) {
       print('connect');
     });
-
     socket.on('temp2web', (data) {
       print('temp2web from server $data');
       var station = StationData.fromJson(data);
