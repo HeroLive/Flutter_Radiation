@@ -9,9 +9,10 @@ app.get('/',(req,res)=>{
 
 io.on('connection', client => {
     console.log(`New client connected`);
-    client.on('fromClient', data => { 
-        console.log(data); 
-        client.emit('fromServer', `${Number(data)+1}`)
+    client.on('sensor2Server', data => { 
+        console.log(data);
+        let dht = eval(data);
+        console.log(dht.dht.tempC); 
     })
     client.on('disconnect', () => console.log(`Client disconnected`))
 });

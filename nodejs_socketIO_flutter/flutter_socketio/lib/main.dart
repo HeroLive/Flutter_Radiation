@@ -60,7 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void connectAndListen() {
     print('Call func connectAndListen');
-    socket = IO.io('http://192.168.1.2:3484',
+    socket = IO.io('https://jelly-plume-cupcake.glitch.me',
         IO.OptionBuilder().setTransports(['websocket']).build());
 
     socket.onConnect((_) {
