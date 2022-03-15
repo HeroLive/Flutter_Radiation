@@ -11,10 +11,10 @@
 ESP8266WiFiMulti WiFiMulti;
 SocketIoClient socketIO;
 
-char host[] = "192.168.1.3";
-int port = 3484;
-//char host[] = "wsiot.herokuapp.com";
-//int port = 80;
+//char host[] = "192.168.1.3";
+//int port = 3484;
+char host[] = "enchanting-cut-wilderness.glitch.me";
+int port = 80;
 char username[] = "esp";
 char password[] = "1234";
 
@@ -26,6 +26,7 @@ DHT HT(DHT11Pin, DHTType);
 float humi;
 float tempC;
 float tempF;
+long count = 0;
 StaticJsonDocument<500> SensorDoc;
 
 
@@ -64,6 +65,7 @@ void loop() {
   uint64_t now = millis();
   if (now - messageTimestamp > 5000) {
     messageTimestamp = now;
+    count++;
     dht();
   }
 }
@@ -74,6 +76,7 @@ void dht() {
   tempF = HT.readTemperature(true);
   SensorDoc["dht"]["tempC"] = round(tempC);
   SensorDoc["dht"]["humi"] = round(humi);
+  SensorDoc["dht"]["count"] = count;
   char msg[256];
   serializeJson(SensorDoc, msg);
   socketIO.emit("sensor2Server", msg);

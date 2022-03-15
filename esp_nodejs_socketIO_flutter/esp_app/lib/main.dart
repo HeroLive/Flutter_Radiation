@@ -10,7 +10,7 @@ void main() {
 }
 
 IO.Socket socket = IO.io(
-    'http://192.168.1.3:3484', //https://jelly-plume-cupcake.glitch.me
+    'https://enchanting-cut-wilderness.glitch.me', //'http://192.168.1.3:3484', //https://jelly-plume-cupcake.glitch.me
     IO.OptionBuilder().setTransports(['websocket']).build());
 
 class MyApp extends StatelessWidget {
