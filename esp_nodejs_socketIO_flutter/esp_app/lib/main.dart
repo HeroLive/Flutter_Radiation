@@ -57,7 +57,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Sensor _sensorData = Sensor(Dht(0, 0));
+  Sensor _sensorData = Sensor(Dht(0, 0, 0));
   @override
   void initState() {
     // TODO: implement initState
@@ -109,6 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'Do am: ${_sensorData.dht.humi}',
               style: Theme.of(context).textTheme.headline4,
             ),
+            Text('Count: ${_sensorData.dht.count}'),
           ],
         ),
       ),

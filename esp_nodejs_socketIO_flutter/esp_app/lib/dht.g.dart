@@ -9,9 +9,11 @@ part of 'dht.dart';
 Dht _$DhtFromJson(Map<String, dynamic> json) => Dht(
       json['tempC'],
       json['humi'],
+      json['count'],
     );
 
 Map<String, dynamic> _$DhtToJson(Dht instance) => <String, dynamic>{
       'tempC': instance.tempC,
       'humi': instance.humi,
+      'count': instance.count,
     };

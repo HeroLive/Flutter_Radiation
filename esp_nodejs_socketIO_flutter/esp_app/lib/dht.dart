@@ -7,8 +7,9 @@ part 'dht.g.dart';
 class Dht {
   dynamic tempC;
   dynamic humi;
+  dynamic count;
 
-  Dht(this.tempC, this.humi);
+  Dht(this.tempC, this.humi, this.count);
 
   factory Dht.fromJson(Map<String, dynamic> json) => _$DhtFromJson(json);
   Map<String, dynamic> toJson() => _$DhtToJson(this);
