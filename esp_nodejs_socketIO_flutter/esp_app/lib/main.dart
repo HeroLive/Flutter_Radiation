@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:esp_app/dht.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import './sensor.dart';
 
 void main() {
   runApp(const MyApp());
@@ -53,6 +57,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Sensor _sensorData = Sensor(Dht(0, 0));
   @override
   void initState() {
     // TODO: implement initState
@@ -70,6 +75,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     socket.on('server2user', (data) {
       print(data);
+      var sensor = Sensor.fromJson(data);
+      // print(sensor);
+      print('Nhiet do: ${sensor.dht.tempC} Do am: ${sensor.dht.humi}');
+
+      setState(() {
+        _sensorData = sensor;
+      });
     });
 
     //When an event recieved from server, data is added to the stream
@@ -90,7 +102,11 @@ class _MyHomePageState extends State<MyHomePage> {
               'DHT:',
             ),
             Text(
-              'Nhiet do',
+              'Nhiet do: ${_sensorData.dht.tempC}',
+              style: Theme.of(context).textTheme.headline4,
+            ),
+            Text(
+              'Do am: ${_sensorData.dht.humi}',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
