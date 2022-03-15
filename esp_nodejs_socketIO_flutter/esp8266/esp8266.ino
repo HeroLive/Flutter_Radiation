@@ -45,7 +45,7 @@ void setup() {
   //if it does not connect it starts an access point with the specified name
   //here  "AutoConnectAP"
   //and goes into a blocking loop awaiting configuration
-  wifiManager.autoConnect("ESP8266", "12345678");
+  wifiManager.autoConnect(username, password);
   //or use this for auto generated name ESP + ChipID
   //wifiManager.autoConnect();
   //if you get here you have connected to the WiFi
@@ -53,7 +53,7 @@ void setup() {
 
   socketIO.begin(host, port);
   // use HTTP Basic Authorization this is optional remove if not needed
-  socketIO.setAuthorization(username, password);
+//  socketIO.setAuthorization("username", "password");
 
   HT.begin();
   dht();

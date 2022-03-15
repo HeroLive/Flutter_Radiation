@@ -3,17 +3,21 @@ const server = require('http').createServer(app);
 const options = { /* ... */ };
 const io = require('socket.io')(server, options);
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send('Hello World Nodejs....')
 })
 
 io.on('connection', client => {
     console.log(`New client connected`);
-    client.on('sensor2Server', data => { 
+    client.on('sensor2Server', data => {
         console.log(data);
-        let dht = eval(data);
-        console.log(dht.dht.tempC); 
+        // let dht = eval(data);
+        // console.log(dht.dht.tempC);
+        io.emit("server2user", data)
     })
+    client.on("from-user", data =>{
+        console.log(data);
+    } )
     client.on('disconnect', () => console.log(`Client disconnected`))
 });
 
