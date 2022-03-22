@@ -5,13 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import './sensor.dart';
 import './gpio.dart';
+import './pin.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 IO.Socket socket = IO.io(
-    'http://192.168.1.3:3484', //'https://enchanting-cut-wilderness.glitch.me', //, //https://jelly-plume-cupcake.glitch.me
+    'https://enchanting-cut-wilderness.glitch.me', //'http://192.168.1.3:3484',, //https://jelly-plume-cupcake.glitch.me
     IO.OptionBuilder().setTransports(['websocket']).build());
 
 class MyApp extends StatelessWidget {
@@ -59,7 +60,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Sensor _sensorData = Sensor(Dht(0, 0, 0));
-  List<Gpio> gpios = [Gpio(4, 'D2', 1), Gpio(16, 'D0', 0)];
+  List<Gpio> gpios = [Gpio(4, 'D2', true), Gpio(16, 'D0', false)];
   @override
   void initState() {
     // TODO: implement initState
@@ -88,6 +89,13 @@ class _MyHomePageState extends State<MyHomePage> {
     socket.on('server2gpio', (data) {
       print(data);
     });
+    socket.on('gpio-server-user', (data) {
+      print(data);
+      var pin = Pin.fromJson(data);
+      setState(() {
+        gpios = pin.gpio;
+      });
+    });
 
     //When an event recieved from server, data is added to the stream
     socket.onDisconnect((_) => print('disconnect'));
@@ -97,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (gpio.pin == null) {
       return;
     }
-    var _value = gpio.value != null ? (gpio.value == 1 ? 0 : 1) : gpio.value;
+    var _value = gpio.value != null ? !gpio.value : gpio.value;
     final _gpio = gpios.firstWhere((element) => element.pin == gpio.pin);
     if (_gpio != null) {
       setState(() => _gpio.value = _value);
@@ -129,8 +137,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text('Count: ${_sensorData.dht.count}'),
             ElevatedButton(
-                onPressed: () => {sendGpioToServer(gpios[0])},
-                child: Text('${gpios[0].name}'))
+              onPressed: () => {sendGpioToServer(gpios[0])},
+              child: Text('${gpios[0].name}'),
+              style: ElevatedButton.styleFrom(
+                  primary: gpios[0].value ? Colors.amber : Colors.black12),
+            ),
           ],
         ),
       ),

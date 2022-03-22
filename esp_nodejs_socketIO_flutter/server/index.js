@@ -15,6 +15,12 @@ io.on('connection', client => {
         // console.log(dht.dht.tempC);
         io.emit("server2user", data)
     })
+    client.on('gpio2Server', data => {
+        console.log(data);
+        // let dht = eval(data);
+        // console.log(dht.dht.tempC);
+        io.emit("gpio-server-user", data)
+    })
     client.on("from-user", data =>{
         console.log(data);
     } )

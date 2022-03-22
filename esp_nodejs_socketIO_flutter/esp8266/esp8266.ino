@@ -11,10 +11,10 @@
 ESP8266WiFiMulti WiFiMulti;
 SocketIoClient socketIO;
 
-char host[] = "192.168.1.3";
-int port = 3484;
-//char host[] = "enchanting-cut-wilderness.glitch.me";
-//int port = 80;
+//char host[] = "192.168.1.3";
+//int port = 3484;
+char host[] = "enchanting-cut-wilderness.glitch.me";
+int port = 80;
 char username[] = "esp";
 char password[] = "1234";
 
@@ -58,6 +58,8 @@ void setup() {
   // use HTTP Basic Authorization this is optional remove if not needed
   //  socketIO.setAuthorization("username", "password");
 
+  pinMode(BtD5, INPUT_PULLUP);
+
   HT.begin();
   dht();
   socketIO.on("server2gpio", GpioEvent);
@@ -71,11 +73,12 @@ void loop() {
     count++;
     dht();
   }
+  buttonAction();
 }
 
 //received data refer to esp_nodejs_socketIO_flutter
 void GpioEvent(const char * payload, size_t length) {
-  Serial.println(payload);
+  //  Serial.println(payload);
   deserializeJson(LedDoc, payload);
   serializeJson(LedDoc, Serial);
   Serial.println("Received data from server");
@@ -83,6 +86,18 @@ void GpioEvent(const char * payload, size_t length) {
   for (int i = 0; i < LedDoc["gpio"].size(); i++) {
     pinMode(LedDoc["gpio"][i]["pin"], OUTPUT);
     digitalWrite(LedDoc["gpio"][i]["pin"], LedDoc["gpio"][i]["value"]);
+  }
+}
+void buttonAction() {
+  if (digitalRead(BtD5) == 0) {
+    while (digitalRead(BtD5) == 0);
+    pinMode(LedDoc["gpio"][0]["pin"], OUTPUT);
+    LedDoc["gpio"][0]["value"] = !LedDoc["gpio"][0]["value"];
+    digitalWrite(LedDoc["gpio"][0]["pin"], LedDoc["gpio"][0]["value"]);
+    
+    char msg[256];
+    serializeJson(LedDoc, msg);
+    socketIO.emit("gpio2Server", msg);
   }
 }
 void dht() {
