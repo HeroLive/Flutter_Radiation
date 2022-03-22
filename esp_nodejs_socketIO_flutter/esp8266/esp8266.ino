@@ -13,7 +13,7 @@ SocketIoClient socketIO;
 
 //char host[] = "192.168.1.3";
 //int port = 3484;
-char host[] = "enchanting-cut-wilderness.glitch.me";
+char host[] = "dht-led.glitch.me";
 int port = 80;
 char username[] = "esp";
 char password[] = "1234";
