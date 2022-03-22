@@ -11,15 +11,16 @@
 ESP8266WiFiMulti WiFiMulti;
 SocketIoClient socketIO;
 
-//char host[] = "192.168.1.3";
-//int port = 3484;
-char host[] = "enchanting-cut-wilderness.glitch.me";
-int port = 80;
+char host[] = "192.168.1.3";
+int port = 3484;
+//char host[] = "enchanting-cut-wilderness.glitch.me";
+//int port = 80;
 char username[] = "esp";
 char password[] = "1234";
 
 uint64_t messageTimestamp;
 
+#define BtD5 14
 #define DHT11Pin D1
 #define DHTType DHT11
 DHT HT(DHT11Pin, DHTType);
@@ -27,7 +28,8 @@ float humi;
 float tempC;
 float tempF;
 long count = 0;
-StaticJsonDocument<500> SensorDoc;
+StaticJsonDocument<200> SensorDoc;
+StaticJsonDocument<500> LedDoc;
 
 
 void setup() {
@@ -37,7 +39,7 @@ void setup() {
   //Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wifiManager;
   //reset saved settings
-//  wifiManager.resetSettings();
+  //  wifiManager.resetSettings();
 
   //set custom ip for portal
   wifiManager.setAPStaticIPConfig(IPAddress(10, 0, 1, 1), IPAddress(10, 0, 1, 1), IPAddress(255, 255, 255, 0));
@@ -54,10 +56,11 @@ void setup() {
 
   socketIO.begin(host, port);
   // use HTTP Basic Authorization this is optional remove if not needed
-//  socketIO.setAuthorization("username", "password");
+  //  socketIO.setAuthorization("username", "password");
 
   HT.begin();
   dht();
+  socketIO.on("server2gpio", GpioEvent);
 }
 
 void loop() {
@@ -70,6 +73,18 @@ void loop() {
   }
 }
 
+//received data refer to esp_nodejs_socketIO_flutter
+void GpioEvent(const char * payload, size_t length) {
+  Serial.println(payload);
+  deserializeJson(LedDoc, payload);
+  serializeJson(LedDoc, Serial);
+  Serial.println("Received data from server");
+
+  for (int i = 0; i < LedDoc["gpio"].size(); i++) {
+    pinMode(LedDoc["gpio"][i]["pin"], OUTPUT);
+    digitalWrite(LedDoc["gpio"][i]["pin"], LedDoc["gpio"][i]["value"]);
+  }
+}
 void dht() {
   humi = HT.readHumidity();
   tempC = HT.readTemperature();

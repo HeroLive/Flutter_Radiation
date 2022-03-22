@@ -6,7 +6,7 @@ const io = require('socket.io')(server, options);
 app.get('/', (req, res) => {
     res.send('Hello World Nodejs....')
 })
-
+//Device ID to emit and on from and to sensor-server-user
 io.on('connection', client => {
     console.log(`New client connected`);
     client.on('sensor2Server', data => {
@@ -17,6 +17,11 @@ io.on('connection', client => {
     })
     client.on("from-user", data =>{
         console.log(data);
+    } )
+    client.on("button-to-server", data =>{
+        let leds = JSON.parse(data);
+        console.log(leds);
+        io.emit("server2gpio", leds);
     } )
     client.on('disconnect', () => console.log(`Client disconnected`))
 });

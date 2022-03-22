@@ -4,13 +4,14 @@ import 'package:esp_app/dht.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import './sensor.dart';
+import './gpio.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 IO.Socket socket = IO.io(
-    'https://enchanting-cut-wilderness.glitch.me', //'http://192.168.1.3:3484', //https://jelly-plume-cupcake.glitch.me
+    'http://192.168.1.3:3484', //'https://enchanting-cut-wilderness.glitch.me', //, //https://jelly-plume-cupcake.glitch.me
     IO.OptionBuilder().setTransports(['websocket']).build());
 
 class MyApp extends StatelessWidget {
@@ -58,6 +59,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   Sensor _sensorData = Sensor(Dht(0, 0, 0));
+  List<Gpio> gpios = [Gpio(4, 'D2', 1), Gpio(16, 'D0', 0)];
   @override
   void initState() {
     // TODO: implement initState
@@ -83,9 +85,25 @@ class _MyHomePageState extends State<MyHomePage> {
         _sensorData = sensor;
       });
     });
+    socket.on('server2gpio', (data) {
+      print(data);
+    });
 
     //When an event recieved from server, data is added to the stream
     socket.onDisconnect((_) => print('disconnect'));
+  }
+
+  void sendGpioToServer(Gpio gpio) {
+    if (gpio.pin == null) {
+      return;
+    }
+    var _value = gpio.value != null ? (gpio.value == 1 ? 0 : 1) : gpio.value;
+    final _gpio = gpios.firstWhere((element) => element.pin == gpio.pin);
+    if (_gpio != null) {
+      setState(() => _gpio.value = _value);
+    }
+    var msg = {"gpio": gpios};
+    socket.emit('button-to-server', jsonEncode(msg));
   }
 
   @override
@@ -110,6 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             Text('Count: ${_sensorData.dht.count}'),
+            ElevatedButton(
+                onPressed: () => {sendGpioToServer(gpios[0])},
+                child: Text('${gpios[0].name}'))
           ],
         ),
       ),
