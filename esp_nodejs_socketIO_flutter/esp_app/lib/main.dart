@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Smart Home'),
     );
   }
 }
@@ -124,16 +124,72 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'DHT:',
-            ),
-            Text(
-              'Nhiet do: ${_sensorData.dht.tempC}',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            Text(
-              'Do am: ${_sensorData.dht.humi}',
-              style: Theme.of(context).textTheme.headline4,
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'DHT11',
+                    ),
+                    Padding(padding: EdgeInsets.all(4)),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Card(
+                            margin: EdgeInsets.zero,
+                            color: Colors.blue,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Temperature',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white70),
+                                  ),
+                                  Padding(padding: EdgeInsets.all(8)),
+                                  Text(
+                                    '${_sensorData.dht.tempC}°',
+                                    style: TextStyle(
+                                        fontSize: 40, color: Colors.white),
+                                  ),
+                                  Padding(padding: EdgeInsets.all(8)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Card(
+                            color: Colors.blue,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    'Humidity',
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white70),
+                                  ),
+                                  Padding(padding: EdgeInsets.all(8)),
+                                  Text(
+                                    '${_sensorData.dht.humi}%',
+                                    style: TextStyle(
+                                        fontSize: 40, color: Colors.white),
+                                  ),
+                                  Padding(padding: EdgeInsets.all(8)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ),
             Text('Count: ${_sensorData.dht.count}'),
             ElevatedButton(
