@@ -6,6 +6,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import './sensor.dart';
 import './gpio.dart';
 import './pin.dart';
+import './dataModel.dart';
+import 'package:realm/realm.dart';
 
 void main() {
   runApp(const MyApp());
@@ -61,9 +63,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Sensor _sensorData = Sensor(Dht(0, 0, 0));
   List<Gpio> gpios = [Gpio(4, 'D2', true), Gpio(16, 'D0', false)];
+  late Realm realm;
   @override
   void initState() {
     // TODO: implement initState
+    final config = Configuration([RDht.schema]);
+    realm = Realm(config);
     super.initState();
     connectAndListen();
   }
@@ -85,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
       setState(() {
         _sensorData = sensor;
       });
+      DBJob(sensor);
     });
     socket.on('server2gpio', (data) {
       print(data);
@@ -112,6 +118,23 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     var msg = {"gpio": gpios};
     socket.emit('button-to-server', jsonEncode(msg));
+  }
+
+  void DBJob(Sensor sensor) {
+    var _dht = RDht(
+        '${sensor.dht.tempC}', '${sensor.dht.humi}', '${sensor.dht.count}');
+    realm.write(() {
+      realm.add(_dht);
+    });
+    print("Getting all dht data from the Realm.");
+    var dhts = realm.all<RDht>();
+
+    print(dhts.length);
+    dhts.forEach(
+      (ele) {
+        print('Nhiet do: ${ele.tempC} Do am: ${ele.humi} Count: ${ele.count}');
+      },
+    );
   }
 
   @override
@@ -192,6 +215,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Text('Count: ${_sensorData.dht.count}'),
+            Text('Number save: ${realm.all<RDht>().length}'),
             ElevatedButton(
               onPressed: () => {sendGpioToServer(gpios[0])},
               child: Text('${gpios[0].name}'),
