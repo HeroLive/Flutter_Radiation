@@ -8,31 +8,38 @@ part of 'dataModel.dart';
 
 class RDht extends _RDht with RealmEntity, RealmObject {
   RDht(
-    String tempC,
-    String humi,
-    String count,
+    double tempC,
+    int humi,
+    int count,
+    int date,
   ) {
     RealmObject.set(this, 'tempC', tempC);
     RealmObject.set(this, 'humi', humi);
     RealmObject.set(this, 'count', count);
+    RealmObject.set(this, 'date', date);
   }
 
   RDht._();
 
   @override
-  String get tempC => RealmObject.get<String>(this, 'tempC') as String;
+  double get tempC => RealmObject.get<double>(this, 'tempC') as double;
   @override
-  set tempC(String value) => RealmObject.set(this, 'tempC', value);
+  set tempC(double value) => RealmObject.set(this, 'tempC', value);
 
   @override
-  String get humi => RealmObject.get<String>(this, 'humi') as String;
+  int get humi => RealmObject.get<int>(this, 'humi') as int;
   @override
-  set humi(String value) => RealmObject.set(this, 'humi', value);
+  set humi(int value) => RealmObject.set(this, 'humi', value);
 
   @override
-  String get count => RealmObject.get<String>(this, 'count') as String;
+  int get count => RealmObject.get<int>(this, 'count') as int;
   @override
-  set count(String value) => RealmObject.set(this, 'count', value);
+  set count(int value) => RealmObject.set(this, 'count', value);
+
+  @override
+  int get date => RealmObject.get<int>(this, 'date') as int;
+  @override
+  set date(int value) => RealmObject.set(this, 'date', value);
 
   @override
   Stream<RealmObjectChanges<RDht>> get changes =>
@@ -43,9 +50,10 @@ class RDht extends _RDht with RealmEntity, RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(RDht._);
     return const SchemaObject(RDht, [
-      SchemaProperty('tempC', RealmPropertyType.string),
-      SchemaProperty('humi', RealmPropertyType.string),
-      SchemaProperty('count', RealmPropertyType.string),
+      SchemaProperty('tempC', RealmPropertyType.double),
+      SchemaProperty('humi', RealmPropertyType.int),
+      SchemaProperty('count', RealmPropertyType.int),
+      SchemaProperty('date', RealmPropertyType.int),
     ]);
   }
 }

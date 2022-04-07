@@ -7,9 +7,15 @@
 
 #include <SocketIoClient.h> //v0.3 fix error beginSSL by replace const char* fingerprint = DEFAULT_FINGERPRINT to const uint8_t * fingerprint = NULL
 
+#include <WiFiUdp.h> //realtime
+#include <NTPClient.h> //realtime
 
 ESP8266WiFiMulti WiFiMulti;
 SocketIoClient socketIO;
+
+//properties realtime from internet: vn.pool.ntp.org
+WiFiUDP ntpUDP;
+NTPClient timeClient(ntpUDP, "vn.pool.ntp.org");
 
 //char host[] = "192.168.1.3";
 //int port = 3484;
@@ -24,10 +30,11 @@ uint64_t messageTimestamp;
 #define DHT11Pin D1
 #define DHTType DHT11
 DHT HT(DHT11Pin, DHTType);
-float humi;
-float tempC;
-float tempF;
+double humi;
+double tempC;
+double tempF;
 long count = 0;
+unsigned long epochTime;
 StaticJsonDocument<200> SensorDoc;
 StaticJsonDocument<500> LedDoc;
 
@@ -61,15 +68,19 @@ void setup() {
   pinMode(BtD5, INPUT_PULLUP);
 
   HT.begin();
+  delay(1000);
   dht();
   socketIO.on("server2gpio", GpioEvent);
+  //Realtime setup
+  timeClient.begin();
+  timeClient.setTimeOffset(7 * 3600); //Vietnam Timezone
 }
 
 void loop() {
+  epochTime = getTime();
   socketIO.loop();
-  uint64_t now = millis();
-  if (now - messageTimestamp > 5000) {
-    messageTimestamp = now;
+  if (millis() - messageTimestamp > 5000) {
+    messageTimestamp = millis();
     count++;
     dht();
   }
@@ -104,10 +115,19 @@ void dht() {
   humi = HT.readHumidity();
   tempC = HT.readTemperature();
   tempF = HT.readTemperature(true);
-  SensorDoc["dht"]["tempC"] = round(tempC);
-  SensorDoc["dht"]["humi"] = round(humi);
+  Serial.println(humi);
+  SensorDoc["dht"]["tempC"] = tempC;
+  SensorDoc["dht"]["humi"] = humi;
   SensorDoc["dht"]["count"] = count;
+  SensorDoc["dht"]["date"] = epochTime;
   char msg[256];
   serializeJson(SensorDoc, msg);
   socketIO.emit("sensor2Server", msg);
+}
+
+// Function that gets current epoch time
+unsigned long getTime() {
+  timeClient.update();
+  unsigned long now = timeClient.getEpochTime();
+  return now;
 }

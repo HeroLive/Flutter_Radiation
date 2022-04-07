@@ -61,7 +61,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Sensor _sensorData = Sensor(Dht(0, 0, 0));
+  Sensor _sensorData = Sensor(Dht(0, 0, 0, 0));
   List<Gpio> gpios = [Gpio(4, 'D2', true), Gpio(16, 'D0', false)];
   late Realm realm;
   @override
@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void DBJob(Sensor sensor) {
     var _dht = RDht(
-        '${sensor.dht.tempC}', '${sensor.dht.humi}', '${sensor.dht.count}');
+        sensor.dht.tempC, sensor.dht.humi, sensor.dht.count, sensor.dht.date);
     realm.write(() {
       realm.add(_dht);
     });
@@ -130,9 +130,12 @@ class _MyHomePageState extends State<MyHomePage> {
     var dhts = realm.all<RDht>();
 
     print(dhts.length);
-    dhts.forEach(
+    // Filter and sort object
+    var objects = realm.query<RDht>("date>=1649195800 && date<=1649195900");
+    objects.forEach(
       (ele) {
-        print('Nhiet do: ${ele.tempC} Do am: ${ele.humi} Count: ${ele.count}');
+        print(
+            'Nhiet do: ${ele.tempC} Do am: ${ele.humi} Count: ${ele.count} Date: ${ele.date}');
       },
     );
   }

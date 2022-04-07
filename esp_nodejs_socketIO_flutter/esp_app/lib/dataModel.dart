@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 import 'package:realm/realm.dart';
 part 'dataModel.g.dart';
 
 @RealmModel()
 class _RDht {
-  late String tempC;
-  late String humi;
-  late String count;
+  late double tempC;
+  late int humi;
+  late int count;
+  late int date;
 }
